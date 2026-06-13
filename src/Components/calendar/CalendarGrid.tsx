@@ -1,13 +1,12 @@
 import { useMemo, useRef, useLayoutEffect, useState } from 'react';
-import styles from './Calendar.module.css';
 import { getLessonForSlot } from '../../utils/getLessonForSlot';
-import type {Lesson, ScheduleInterval, TimeSlot, View} from "../../types/calendar.ts";
-import {useCalendarStore} from "../../store/calendarStore.ts";
-import {getDaysForView} from "../../utils/getDaysForView.ts";
-import {generateTimeSlots} from "../../utils/generateTimeSlots.ts";
-import {isWorkingHour} from "../../utils/isWorkingHour";
-import TimeSlotRow from "./TimeSlotRow.tsx";
-import LessonBlock from "./LessonBlock.tsx";
+import type { Lesson, ScheduleInterval, TimeSlot, View } from '../../types/calendar';
+import { useCalendarStore } from '../../store/calendarStore';
+import { getDaysForView } from '../../utils/getDaysForView';
+import { generateTimeSlots } from '../../utils/generateTimeSlots';
+import { isWorkingHour } from '../../utils/isWorkingHour';
+import TimeSlotRow from './TimeSlotRow';
+import LessonBlock from './LessonBlock';
 
 type GridProps = {
     view: View;
@@ -34,25 +33,22 @@ function CalendarGrid({ view, startDate, schedule, lessons, onSlotClick }: GridP
             if (!gridRef.current) return;
             const newPositions: typeof lessonPositions = [];
 
-            lessons.forEach(lesson => {
+            lessons.forEach((lesson) => {
                 const lessonStart = new Date(lesson.startTime);
                 const lessonEnd = new Date(lesson.endTime);
                 const durationMinutes = (lessonEnd.getTime() - lessonStart.getTime()) / 60000;
-                const rowSpan = durationMinutes / 30; // количество занимаемых слотов
+                const rowSpan = durationMinutes / 30;
 
-                // Индекс дня в массиве days
-                const dayIndex = days.findIndex(day => day.toDateString() === lessonStart.toDateString());
+                const dayIndex = days.findIndex((day) => day.toDateString() === lessonStart.toDateString());
                 if (dayIndex === -1) return;
 
-                // Индекс временного слота в timeSlots (по времени начала урока)
-                const slotIndex = timeSlots.findIndex(slot => {
+                const slotIndex = timeSlots.findIndex((slot) => {
                     const candidate = new Date(lessonStart);
                     candidate.setUTCHours(slot.getUTCHours(), slot.getUTCMinutes(), 0, 0);
                     return candidate.getTime() === lessonStart.getTime();
                 });
                 if (slotIndex === -1) return;
 
-                // Ищем первую ячейку урока по data-day и data-slot
                 const firstCell = gridRef.current!.querySelector(
                     `[data-day="${dayIndex}"][data-slot="${slotIndex}"]`
                 );
@@ -70,13 +66,9 @@ function CalendarGrid({ view, startDate, schedule, lessons, onSlotClick }: GridP
         };
 
         updatePositions();
-
-        // Подписываемся на изменение размера окна
         window.addEventListener('resize', updatePositions);
         return () => window.removeEventListener('resize', updatePositions);
     }, [days, timeSlots, lessons]);
-
-
 
     const handleCellClick = (cellStart: Date, cellEnd: Date) => {
         const working = isWorkingHour(cellStart, schedule);
@@ -89,22 +81,23 @@ function CalendarGrid({ view, startDate, schedule, lessons, onSlotClick }: GridP
     };
 
     const deleteLesson = (id: number) => {
-        const updatedLessons = lessons.filter(l => l.id !== id);
+        const updatedLessons = lessons.filter((l) => l.id !== id);
         useCalendarStore.getState().setLessons(updatedLessons);
     };
 
-
-
-
     return (
-        <div className={styles.gridWrapper}>
-            <div ref={gridRef} className={styles.grid} style={{gridTemplateColumns: gridCols, gap: '1px'}}>
-                <div className={styles.headerCell}>Время</div>
+        <div className="overflow-x-auto relative">
+            <div
+                ref={gridRef}
+                className="grid bg-gray-200 rounded-lg overflow-hidden gap-[1px]"
+                style={{ gridTemplateColumns: gridCols }}
+            >
+                <div className="bg-gray-100 p-2 text-center font-semibold">Время</div>
                 {days.map((day) => (
-                    <div key={day.toISOString()} className={styles.headerCell}>
-                        {day.toLocaleDateString('ru-RU', {weekday: 'long'})}
-                        <div className={styles.dayNumber}>
-                            {day.toLocaleDateString('ru-RU', {day: 'numeric', month: 'numeric', year: 'numeric'})}
+                    <div key={day.toISOString()} className="bg-gray-100 p-2 text-center font-semibold">
+                        {day.toLocaleDateString('ru-RU', { weekday: 'long' })}
+                        <div className="text-xs text-gray-500">
+                            {day.toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric', year: 'numeric' })}
                         </div>
                     </div>
                 ))}

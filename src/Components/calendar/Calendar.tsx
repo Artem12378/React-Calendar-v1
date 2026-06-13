@@ -1,17 +1,11 @@
-import {  useMemo, useEffect } from 'react';
-import CalendarHeader from './CalendarHeader.tsx';
+import { useMemo, useEffect } from 'react';
+import { useCalendarStore } from '../../store/calendarStore';
+import CalendarHeader from './CalendarHeader';
 import CalendarGrid from './CalendarGrid';
-import styles from './Calendar.module.css';
-import {useCalendarStore} from "../../store/calendarStore.ts";
-import type {Lesson} from "../../types/calendar.ts";
-import {getDaysForView} from "../../utils/getDaysForView.ts";
+import { getDaysForView } from '../../utils/getDaysForView';
 
 function Calendar() {
-    const { view, startDate, schedule, lessons, setView,addSignUp } = useCalendarStore();
-
-
-    // Адаптивная смена вида по ширине экрана
-
+    const { view, startDate, schedule, lessons, setView, addSignUp } = useCalendarStore();
 
     const currentRange = useMemo(() => {
         const days = getDaysForView(view, startDate);
@@ -21,7 +15,6 @@ function Calendar() {
         const format = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
         return `${format(start)} – ${format(end)}`;
     }, [view, startDate]);
-
 
     useEffect(() => {
         const handleResize = () => {
@@ -33,24 +26,22 @@ function Calendar() {
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    }, [setView]);
 
-    const handleAddSignUp = (start:Date, end:Date, userName:string) => {
-        const newSignUp: Lesson = {
+    const handleAddSignUp = (start: Date, end: Date, userName: string) => {
+        const newSignUp = {
             id: Date.now(),
             duration: 30,
             startTime: start.toISOString(),
             endTime: end.toISOString(),
             student: userName,
-        }
-        return addSignUp(newSignUp);
-    }
-
+        };
+        addSignUp(newSignUp);
+    };
 
     const handleSlotSelect = (slot: { start: Date; end: Date }) => {
         const userName = window.prompt('Введите ваше имя для записи:');
         if (userName && userName.trim()) {
-            // Вызываем вашу функцию записи, передавая имя
             handleAddSignUp(slot.start, slot.end, userName.trim());
             alert(`Вы успешно записаны, ${userName}!`);
         } else {
@@ -59,10 +50,8 @@ function Calendar() {
     };
 
     return (
-        <div className={styles.calendarContainer}>
-            <CalendarHeader
-                currentRange={currentRange}
-            />
+        <div className="p-4 max-w-full">
+            <CalendarHeader currentRange={currentRange} />
             <CalendarGrid
                 view={view}
                 startDate={startDate}

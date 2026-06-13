@@ -1,10 +1,9 @@
-import Calendar from "./components/calendar/Calendar.tsx";
-
+import Calendar from "./components/calendar/Calendar";
 
 function App() {
     return (
         <div className="app">
-            <Calendar/>
+            <Calendar />
         </div>
     );
 }

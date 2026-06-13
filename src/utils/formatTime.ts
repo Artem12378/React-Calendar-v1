@@ -7,3 +7,4 @@ export const formatTime = (date: Date): string => {
     const endMinutes = endDate.getUTCMinutes().toString().padStart(2, '0');
     return `${startHours}:${startMinutes} ${endHours}:${endMinutes}`;
 };
+

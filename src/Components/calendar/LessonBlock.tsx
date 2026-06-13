@@ -1,4 +1,3 @@
-import styles from './Calendar.module.css';
 import type { Lesson } from '../../types/calendar';
 
 type LessonBlockProps = {
@@ -13,12 +12,12 @@ type LessonBlockProps = {
 function LessonBlock({ lesson, top, left, width, height, onDelete }: LessonBlockProps) {
     return (
         <div
-            className={styles.lessonOverlay}
+            className="absolute bg-red-400 rounded p-1 text-white text-xs flex flex-col justify-center cursor-pointer z-10 shadow overflow-hidden whitespace-nowrap"
             style={{ top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${height}px` }}
             onClick={() => alert(`Урок с ${lesson.student}, длительность ${lesson.duration} мин`)}
         >
             <button
-                className={styles.deleteLessonBtn}
+                className="absolute top-0.5 right-0.5 bg-transparent border-none text-white text-sm cursor-pointer font-bold z-20 hover:bg-white/20 rounded"
                 onClick={(e) => {
                     e.stopPropagation();
                     onDelete(lesson.id);
@@ -26,8 +25,8 @@ function LessonBlock({ lesson, top, left, width, height, onDelete }: LessonBlock
             >
                 ✖
             </button>
-            <div className={styles.lessonStudent}>{lesson.student}</div>
-            <div className={styles.lessonDuration}>{lesson.duration} мин</div>
+            <div className="font-bold">{lesson.student}</div>
+            <div className="text-[0.7rem] opacity-90">{lesson.duration} мин</div>
         </div>
     );
 }
