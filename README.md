@@ -140,4 +140,3 @@ return <Calendar />;
 
 ## 👨‍💻 Автор
 
-Artem Susidko" > README.md
